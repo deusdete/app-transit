@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { useNavigation } from '@react-navigation/native';
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { TextInput, Button, HelperText } from 'react-native-paper'
 import api from "../../services/api";
 
@@ -28,8 +28,11 @@ export default function Login() {
   }
  
   return (
-    <View>
-      <Text>Login</Text>
+    <View style={styles.container}>
+      <View style={styles.boxTitle}>
+        <Text style={styles.title}>Gentileza gera gentileza</Text>
+        <Text>O transito é feito para você!</Text>
+      </View>
       <View>
         <Text type="error" visible={true} >{error}</Text>
         <TextInput
@@ -50,3 +53,19 @@ export default function Login() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignContent: 'center',
+    paddingHorizontal: 16
+  },
+  boxTitle: {
+    marginBottom: 20
+  },
+  title:{
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+})
