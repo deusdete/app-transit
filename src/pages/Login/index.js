@@ -1,8 +1,10 @@
 import React, {useState} from "react";
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { TextInput, Button, HelperText } from 'react-native-paper'
 import api from "../../services/api";
+
+import logo from '../../../assets/logo.png'
 
 export default function Login() {
   const navigation = useNavigation();
@@ -30,25 +32,28 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <View style={styles.boxTitle}>
-        <Text style={styles.title}>Gentileza gera gentileza</Text>
-        <Text>O transito é feito para você!</Text>
+        <Text style={styles.title}>GENTILEZA GERA GENTILEZA</Text>
+        <Text style={styles.title}>O <Text style={{color: '#FF7C01'}}>TRÂNSITO É</Text> FEITO POR VOCÊ!</Text>
+        <Image source={logo} style={{height: 80, width: '100%', resizeMode: 'contain',}} />
       </View>
-      <View>
+      <View style={styles.form}>
         <Text type="error" visible={true} >{error}</Text>
         <TextInput
+          style={styles.inputText}  
           label="Email"
           value={email}
           onChangeText={ text => setEmail(text)} />
         <TextInput
+          style={styles.inputText}
           label="Senha"
           value={password}
           onChangeText={ text => setPassword(text)} />
-        <Button mode="contained" onPress={handleLogin}>
+        <Button style={styles.buttonSubmit} mode="contained" color="#FF7C01" onPress={handleLogin}>
           Login
         </Button>
       </View>
-      <View>
-        <Text onPress={() => navigation.navigate('Register')} >Criar uma nova conta</Text>
+      <View style={styles.footer}>
+        <Text style={{color: '#FF7C01'}} onPress={() => navigation.navigate('Register')} >Criar uma nova conta</Text>
       </View>
     </View>
   );
@@ -56,16 +61,28 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
-    alignContent: 'center',
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
+    backgroundColor: '#f7f7f7'
   },
   boxTitle: {
-    marginBottom: 20
+    marginTop: 20,
+    marginBottom: 10,
   },
   title:{
-    fontSize: 16,
+    fontSize: 36,
+    color: '#0D0C0B',
     fontWeight: 'bold'
+  },
+  inputText:{
+    marginBottom: 15
+  },
+  buttonSubmit:{
+    height: 56,
+    alignContent: "center",
+    justifyContent: "center",
+  },
+  footer: {
+    marginTop: 20
   }
 })
