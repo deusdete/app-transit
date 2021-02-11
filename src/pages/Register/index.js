@@ -17,6 +17,7 @@ export default function Register() {
     api.post('/auth/register', {name, age, location, type, email, password}).then(res => {
       const [ user, token ] = res.data;
       console.log(token)
+
     }).catch(err => {
       console.log(err)
     })

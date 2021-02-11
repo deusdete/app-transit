@@ -17,6 +17,7 @@ export default function Login() {
     api.post('/auth/login', {email, password}).then(res => {
       const { user, token } = res.data;
       console.log(token)
+      navigation.navigate('Home')
     }).catch(err => {
       if(err.response){
         setError('Email ou senha invalida')
@@ -37,7 +38,7 @@ export default function Login() {
         <Image source={logo} style={{height: 80, width: '100%', resizeMode: 'contain',}} />
       </View>
       <View style={styles.form}>
-        <Text type="error" visible={true} >{error}</Text>
+        <Text type="error" visible={true} style={{marginBottom: 10, color: '#ff401c'}} >{error}</Text>
         <TextInput
           style={styles.inputText}  
           label="Email"
