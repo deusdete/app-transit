@@ -103,7 +103,7 @@ export default function ReportAccident() {
   async function handleSubmit() {
     const valid = validate();
     if (valid) {
-      setSending(false)
+      setSending(true)
       let localUri = capturedImage.uri;
       let filename = localUri.split('/').pop();
 
@@ -367,6 +367,7 @@ export default function ReportAccident() {
                 <View>
                   <Text style={styles.description}>O que aconteceu?</Text>
                   <TextInput
+                    disabled={sending}
                     style={styles.inputText}
                     label="O que aconteceu?"
                     value={description}
@@ -385,6 +386,7 @@ export default function ReportAccident() {
                   )}
                   {!capturedImage ? (
                     <Button
+                      disabled={sending}
                       icon="camera"
                       mode="outlined"
                       onPress={() => console.log("Pressed")}
@@ -403,6 +405,7 @@ export default function ReportAccident() {
                     </Button>
                   ) : (
                     <Button
+                      disabled={sending}
                       icon="camera"
                       mode="outlined"
                       onPress={() => console.log("Pressed")}
@@ -421,6 +424,7 @@ export default function ReportAccident() {
                     </Button>
                   )}
                   <Button
+                    disabled={sending}
                     mode="contained"
                     onPress={() => handleSubmit()}
                     style={{

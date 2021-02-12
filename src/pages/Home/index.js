@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
 import Constants from "expo-constants";
+import { useFocusEffect } from '@react-navigation/native';
 import * as Notifications from "expo-notifications";
 import { View, Button, ScrollView, Platform, StyleSheet, FlatList } from "react-native";
 import { Title, Text, Caption, FAB } from "react-native-paper";
@@ -25,20 +26,28 @@ export default function Home() {
   const notificationListener = useRef();
   const responseListener = useRef();
 
-  useEffect(() => {
-    async function getAccidents() {
-      api
-        .get("/accidents")
-        .then((res) => {
-          const { reportedAccidents } = res.data;
-          setReportedAccidents(reportedAccidents);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-    getAccidents();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+  
+      async function getAccidents() {
+        api
+          .get("/accidents")
+          .then((res) => {
+            const { reportedAccidents } = res.data;
+            setReportedAccidents(reportedAccidents);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      getAccidents();
+  
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
