@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { View, Button, ScrollView, Platform, StyleSheet } from 'react-native';
 import { Title, Text, Caption, FAB   } from 'react-native-paper'
 import AuthContext from '../../services/AuthContext'
+import { useNavigation } from '@react-navigation/native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -15,6 +16,7 @@ Notifications.setNotificationHandler({
 
 
 export default function Home() {
+  const navigation = useNavigation();
   const { state } = useContext(AuthContext);
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
@@ -87,7 +89,7 @@ export default function Home() {
       style={styles.fab}
       small
       icon="plus"
-      onPress={() => console.log('Pressed')}
+      onPress={() => navigation.navigate('ScreenReport')}
     />
   </>
   );

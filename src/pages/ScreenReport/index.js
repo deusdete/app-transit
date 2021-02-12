@@ -29,7 +29,7 @@ export default function ScreenReport() {
         <Button style={styles.button} mode="contained" onPress={() => navigation.navigate('ReportAccident')}>
           Reportar um acidente
           </Button>
-        <Button style={styles.button} mode="contained" onPress={() => navigation.navigate('ReportAccident')}>
+        <Button style={styles.button} mode="contained" onPress={() => navigation.navigate('ReportInfringement')}>
           Reportar uma infração
           </Button>
       </View>

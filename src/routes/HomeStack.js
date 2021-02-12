@@ -42,7 +42,7 @@ export default function HomeStack() {
       >
         <Stack.Screen
           name="Home"
-          component={ReportInfringement}
+          component={HomeScreen}
           options={{
             headerTitle: "Inicio",
           }}
@@ -51,7 +51,7 @@ export default function HomeStack() {
           name="ScreenReport"
           component={ScreenReport}
           options={{
-            headerShown: false,
+            headerTitle: "Reportar",
           }}
         />
         <Stack.Screen
@@ -59,6 +59,13 @@ export default function HomeStack() {
           component={ReportAccident}
           options={{
             headerTitle: "Reporta acidente",
+          }}
+        />
+        <Stack.Screen
+          name="ReportInfringement"
+          component={ReportInfringement}
+          options={{
+            headerTitle: "Reporta infração",
           }}
         />
       </Stack.Navigator>
