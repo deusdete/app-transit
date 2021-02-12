@@ -8,6 +8,8 @@ import {
   ScrollView,
   ImageBackground,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import {
   TextInput,
@@ -17,18 +19,24 @@ import {
   Divider,
   IconButton,
   Colors,
+  ActivityIndicator
 } from "react-native-paper";
 import { Camera } from "expo-camera";
 
 let camera = Camera;
 
 import map from "../../../assets/mapTest.jpeg";
+import api from "../../services/api";
 
 export default function ReportAccident() {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [checked, setChecked] = useState(false);
   const [text, setText] = useState("");
+
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [sending, SetSending] = useState(false);
 
   const [startCamera, setStartCamera] = React.useState(false);
   const [previewVisible, setPreviewVisible] = React.useState(false);
@@ -91,6 +99,58 @@ export default function ReportAccident() {
       setCameraType("back");
     }
   };
+
+  async function handleSubmit() {
+    const valid = validate();
+    if (valid) {
+      setSending(false)
+      let localUri = capturedImage.uri;
+      let filename = localUri.split('/').pop();
+
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+
+      console.log({localUri,filename,match,type})
+      
+      let data = new FormData();
+
+      data.append("description", description);
+      data.append("location", location);
+      data.append('image', { uri: localUri, name: filename, type });
+      console.log(data);
+      api
+        .post("/accidents", data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          console.log("res", res.data);
+          setPreviewVisible(true);
+          setCapturedImage(null);
+          setStartCamera(false)
+          setSending(false)
+          alert('Informações envaida com sucesso. Obrigado')
+        })
+        .catch((err) => {
+          console.log("err", err);
+          setSending(false)
+        });
+    }
+  }
+
+  function validate() {
+    let valid = false;
+    if (!location) {
+      alert("Por favor, informa o local do acidente");
+    } else if (!description) {
+      alert("Por favor, digite uma descrição");
+    } else {
+      valid = true;
+    }
+
+    return valid;
+  }
 
   return (
     <>
@@ -204,167 +264,178 @@ export default function ReportAccident() {
           )}
         </View>
       ) : (
-        <ScrollView style={styles.container}>
-          <View>
-            <Image source={map} style={styles.map} />
-          </View>
-          <View style={styles.form}>
-            <Text style={styles.title}>Registrar acidente</Text>
-            <Divider />
+        <KeyboardAvoidingView
+          style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}
+          enabled
+          keyboardVerticalOffset={100}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView style={styles.container}>
             <View>
-              <View style={styles.location}>
-                <IconButton
-                  icon="map-marker"
-                  color={Colors.red500}
-                  size={25}
-                  onPress={() => console.log("Pressed")}
-                />
-                <Text style={{ fontSize: 16 }}>Av. Caixangá</Text>
-              </View>
+              <Image source={map} style={styles.map} />
             </View>
-
-            <View style={styles.horizontal}>
-              <View style={styles.location}>
-                <IconButton
-                  icon="calendar"
-                  color={Colors.red500}
-                  size={25}
-                  onPress={() => console.log("Pressed")}
-                />
-                <Text style={{ color: "#F05537" }}> 12/02/2020</Text>
-              </View>
-              <View style={styles.location}>
-                <IconButton
-                  icon="clock-outline"
-                  color={Colors.red500}
-                  size={25}
-                  onPress={() => console.log("Pressed")}
-                />
-                <Text style={{ color: "#F05537" }}>12:35</Text>
-              </View>
-            </View>
-            <Divider />
-            <View style={{ paddingHorizontal: 15 }}>
-              <Text style={[styles.topic, { marginLeft: 0 }]}>
-                Quais foram os envolvidos?
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Chip mode="outlined" style={styles.chip}>
-                  Carro
-                </Chip>
-                <Chip mode="outlined" style={styles.chip}>
-                  Moto
-                </Chip>
-                <Chip mode="outlined" style={styles.chip}>
-                  Biciclera
-                </Chip>
-                <Chip mode="outlined" style={styles.chip}>
-                  Pedestre
-                </Chip>
-              </View>
-            </View>
-            <View style={{ paddingHorizontal: 15 }}>
-              <Text style={[styles.topic, { marginLeft: 0 }]}>
-                Houve mortes?
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Chip mode="outlined" style={styles.chip}>
-                  Sim
-                </Chip>
-                <Chip mode="outlined" style={styles.chip}>
-                  Não
-                </Chip>
-                <Text style={{ color: "#F05537" }}>Apenas feridos</Text>
-              </View>
-            </View>
-            <Divider />
-            <View style={styles.fields}>
+            <View style={styles.form}>
+              <Text style={styles.title}>Registrar acidente</Text>
+              <Divider />
               <View>
-                <Text style={styles.description}>O que aconteceu?</Text>
-                <TextInput
-                  style={styles.inputText}
-                  label="O que aconteceu?"
-                  value={text}
-                  onChangeText={(text) => setText(text)}
-                />
+                <View style={styles.location}>
+                  <IconButton
+                    icon="map-marker"
+                    color={Colors.red500}
+                    size={25}
+                    onPress={() => console.log("Pressed")}
+                  />
+                  <View style={{ width: "100%" }}>
+                    <TextInput
+                      style={styles.form}
+                      label="Localização"
+                      value={location}
+                      onChangeText={(text) => setLocation(text)}
+                    />
+                  </View>
+                  {/* <Text style={{ fontSize: 16 }}>Av. Caixangá</Text> */}
+                </View>
               </View>
-              <View style={{ marginTop: 10 }}>
-                <Text style={styles.description}>Adicionar foto</Text>
-                {capturedImage && <CameraPreview
-                  photo={capturedImage}
-                  savePhoto={__savePhoto}
-                  retakePicture={__retakePicture}
-                  startCamera={startCamera}
-                />}
-                {!capturedImage ? (
-                  <Button
-                    icon="camera"
-                    mode="outlined"
+
+              <View style={styles.horizontal}>
+                <View style={styles.location}>
+                  <IconButton
+                    icon="calendar"
+                    color={Colors.red500}
+                    size={25}
                     onPress={() => console.log("Pressed")}
-                    onPress={__startCamera}
-                    style={{
-                      width: 200,
-                      borderRadius: 4,
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: 40,
-                      marginTop: 10,
-                    }}
-                  >
-                    Tirar uma foto
-                  </Button>
-                ) : (
-                  <Button
-                    icon="camera"
-                    mode="outlined"
+                  />
+                  <Text style={{ color: "#F05537" }}> 12/02/2020</Text>
+                </View>
+                <View style={styles.location}>
+                  <IconButton
+                    icon="clock-outline"
+                    color={Colors.red500}
+                    size={25}
                     onPress={() => console.log("Pressed")}
-                    onPress={__retakePicture}
-                    style={{
-                      width: 200,
-                      borderRadius: 4,
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: 40,
-                      marginTop: 10,
-                    }}
-                  >
-                    Tirar outra
-                  </Button>
-                )}
-                <Button
-                  mode="contained"
-                  onPress={() => console.log("Pressed")}
-                  onPress={__retakePicture}
+                  />
+                  <Text style={{ color: "#F05537" }}>12:35</Text>
+                </View>
+              </View>
+              <Divider />
+              <View style={{ paddingHorizontal: 15 }}>
+                <Text style={[styles.topic, { marginLeft: 0 }]}>
+                  Quais foram os envolvidos?
+                </Text>
+                <View
                   style={{
-                    borderRadius: 4,
-                    backgroundColor: "#F05537",
                     flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 40,
-                    marginTop: 20,
-                    marginBottom: 30
+                    justifyContent: "space-between",
                   }}
                 >
-                  Enviar
-                </Button>
+                  <Chip mode="outlined" style={styles.chip}>
+                    Carro
+                  </Chip>
+                  <Chip mode="outlined" style={styles.chip}>
+                    Moto
+                  </Chip>
+                  <Chip mode="outlined" style={styles.chip}>
+                    Biciclera
+                  </Chip>
+                  <Chip mode="outlined" style={styles.chip}>
+                    Pedestre
+                  </Chip>
+                </View>
+              </View>
+              <View style={{ paddingHorizontal: 15 }}>
+                <Text style={[styles.topic, { marginLeft: 0 }]}>
+                  Houve mortes?
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Chip mode="outlined" style={styles.chip}>
+                    Sim
+                  </Chip>
+                  <Chip mode="outlined" style={styles.chip}>
+                    Não
+                  </Chip>
+                  <Text style={{ color: "#F05537" }}>Apenas feridos</Text>
+                </View>
+              </View>
+              <Divider />
+              <View style={styles.fields}>
+                <View>
+                  <Text style={styles.description}>O que aconteceu?</Text>
+                  <TextInput
+                    style={styles.inputText}
+                    label="O que aconteceu?"
+                    value={description}
+                    onChangeText={(text) => setDescription(text)}
+                  />
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  <Text style={styles.description}>Adicionar foto</Text>
+                  {capturedImage && (
+                    <CameraPreview
+                      photo={capturedImage}
+                      savePhoto={__savePhoto}
+                      retakePicture={__retakePicture}
+                      startCamera={startCamera}
+                    />
+                  )}
+                  {!capturedImage ? (
+                    <Button
+                      icon="camera"
+                      mode="outlined"
+                      onPress={() => console.log("Pressed")}
+                      onPress={__startCamera}
+                      style={{
+                        width: 200,
+                        borderRadius: 4,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: 40,
+                        marginTop: 10,
+                      }}
+                    >
+                      Tirar uma foto
+                    </Button>
+                  ) : (
+                    <Button
+                      icon="camera"
+                      mode="outlined"
+                      onPress={() => console.log("Pressed")}
+                      onPress={__retakePicture}
+                      style={{
+                        width: 200,
+                        borderRadius: 4,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: 40,
+                        marginTop: 10,
+                      }}
+                    >
+                      Tirar outra
+                    </Button>
+                  )}
+                  <Button
+                    mode="contained"
+                    onPress={() => handleSubmit()}
+                    style={{
+                      borderRadius: 4,
+                      marginTop: 20,
+                      backgroundColor: "#F05537",
+                    }}
+                  >
+                    {sending ? <ActivityIndicator animating={true} color={Colors.white} /> : 'Enviar'}
+                  </Button>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
     </>
   );
