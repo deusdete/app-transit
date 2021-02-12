@@ -4,8 +4,12 @@ import { Colors, Button, Paragraph, Dialog, Portal } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import HomeScreen from "../pages/Home";
+import ScreenReport from "../pages//ScreenReport";
+import ReportAccident from "../pages/ReportAccident";
+import ReportInfringement from "../pages/ReportInfringement";
 
 import Context from "../services/AuthContext";
+import Home from "../pages/Home";
 
 const Stack = createStackNavigator();
 
@@ -38,9 +42,23 @@ export default function HomeStack() {
       >
         <Stack.Screen
           name="Home"
-          component={HomeScreen}
+          component={ReportInfringement}
           options={{
             headerTitle: "Inicio",
+          }}
+        />
+        <Stack.Screen
+          name="ScreenReport"
+          component={ScreenReport}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ReportAccident"
+          component={ReportAccident}
+          options={{
+            headerTitle: "Reporta acidente",
           }}
         />
       </Stack.Navigator>
