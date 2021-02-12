@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { TextInput, Button } from 'react-native-paper'
 import api from "../../services/api";
 
@@ -23,7 +23,7 @@ export default function Register() {
     })
   }
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView  style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
       <View style={styles.boxTitle}>
         
       </View>
@@ -65,7 +65,7 @@ export default function Register() {
       <View style={styles.footer}>
         <Text style={{color: '#FF7C01'}} onPress={() => navigation.navigate('Login')} >Ja tem uma conta?</Text>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

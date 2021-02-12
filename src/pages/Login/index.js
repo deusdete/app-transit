@@ -1,62 +1,71 @@
-import React, {useState} from "react";
+import React, { useState, useContext } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, KeyboardAvoidingView, ActivityIndicator, Platform } from "react-native";
 import { TextInput, Button, HelperText } from 'react-native-paper'
-import api from "../../services/api";
+import AuthContext from '../../services/AuthContext'
 
 import logo from '../../../assets/logo.png'
 
 export default function Login() {
   const navigation = useNavigation();
+  const { signIn, state } = useContext(AuthContext);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
 
-  async function handleLogin(){
-    api.post('/auth/login', {email, password}).then(res => {
-      const { user, token } = res.data;
-      console.log(token)
-      navigation.navigate('Home')
+  async function handleLogin() {
+    signIn( email, password ).then(res => {
+      console.log(res)
     }).catch(err => {
-      if(err.response){
+      if (err.response) {
         setError('Email ou senha invalida')
-      }else if(err.request){
+      } else if (err.request) {
         setError('Erro com a conexão com o servidor, tente novamente mais tarde.')
-      }else{
+      } else {
         console.log(err)
       }
-     
+
     })
   }
- 
+
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
       <View style={styles.boxTitle}>
         <Text style={styles.title}>GENTILEZA GERA GENTILEZA</Text>
-        <Text style={styles.title}>O <Text style={{color: '#FF7C01'}}>TRÂNSITO É</Text> FEITO POR VOCÊ!</Text>
-        <Image source={logo} style={{height: 80, width: '100%', resizeMode: 'contain',}} />
+        <Text style={styles.title}>O <Text style={{ color: '#FF7C01' }}>TRÂNSITO É</Text> FEITO POR VOCÊ!</Text>
+        <Image source={logo} style={{ height: 80, width: '100%', resizeMode: 'contain', }} />
       </View>
       <View style={styles.form}>
-        <Text type="error" visible={true} style={{marginBottom: 10, color: '#ff401c'}} >{error}</Text>
+        <Text type="error" visible={true} style={{ marginBottom: 10, color: '#ff401c' }} >{error}</Text>
         <TextInput
-          style={styles.inputText}  
+          style={styles.inputText}
           label="Email"
           value={email}
-          onChangeText={ text => setEmail(text)} />
+          onChangeText={text => setEmail(text)} />
         <TextInput
           style={styles.inputText}
           label="Senha"
           value={password}
-          onChangeText={ text => setPassword(text)} />
-        <Button style={styles.buttonSubmit} mode="contained" color="#FF7C01" onPress={handleLogin}>
-          Login
-        </Button>
+          onChangeText={text => setPassword(text)} />
+        {state.isLoading ? (
+          <ActivityIndicator
+            focusable
+            animating={true}
+            size="small"
+            color={Colors.blue900}
+          />
+        ) : (
+            <Button style={styles.buttonSubmit} mode="contained" color="#FF7C01" onPress={handleLogin}>
+              Login
+            </Button>)
+        }
       </View>
       <View style={styles.footer}>
-        <Text style={{color: '#FF7C01'}} onPress={() => navigation.navigate('Register')} >Criar uma nova conta</Text>
+        <Text style={{ color: '#FF7C01' }} onPress={() => navigation.navigate('Register')} >Criar uma nova conta</Text>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -70,15 +79,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
-  title:{
+  title: {
     fontSize: 36,
     color: '#0D0C0B',
     fontWeight: 'bold'
   },
-  inputText:{
+  inputText: {
     marginBottom: 15
   },
-  buttonSubmit:{
+  buttonSubmit: {
     height: 56,
     alignContent: "center",
     justifyContent: "center",

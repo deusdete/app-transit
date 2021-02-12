@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { Text, View, Button, Platform } from 'react-native';
+import AuthContext from '../../services/AuthContext'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,10 +14,15 @@ Notifications.setNotificationHandler({
 
 
 export default function Home() {
+  const { state } = useContext(AuthContext);
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+
+  useEffect(() => {
+    console.log('state',state)
+  },[])
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
