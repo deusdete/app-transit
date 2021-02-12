@@ -36,7 +36,7 @@ export default function ReportAccident() {
 
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
-  const [sending, SetSending] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const [startCamera, setStartCamera] = React.useState(false);
   const [previewVisible, setPreviewVisible] = React.useState(false);
