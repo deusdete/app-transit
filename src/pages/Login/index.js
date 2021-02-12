@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, Image } from "react-native";
 import { TextInput, Button, HelperText } from 'react-native-paper'
@@ -34,8 +34,8 @@ export default function Login() {
     <View style={styles.container}>
       <View style={styles.boxTitle}>
         <Text style={styles.title}>GENTILEZA GERA GENTILEZA</Text>
-        <Text style={styles.title}>O <Text style={{color: '#FF7C01'}}>TRÂNSITO É</Text> FEITO POR VOCÊ!</Text>
-        <Image source={logo} style={{height: 80, width: '100%', resizeMode: 'contain',}} />
+        <Text style={styles.title}>O <Text style={{color: '#FF7C01'}}>TRÂNSITO É</Text> FEITO POR <Text style={{color: '#FF7C01'}}>VOCÊ!</Text></Text>
+        <Image source={logo} style={{height: 80, width: '100%', resizeMode: 'contain', marginTop: 10}} />
       </View>
       <View style={styles.form}>
         <Text type="error" visible={true} style={{marginBottom: 10, color: '#ff401c'}} >{error}</Text>
@@ -54,7 +54,7 @@ export default function Login() {
         </Button>
       </View>
       <View style={styles.footer}>
-        <Text style={{color: '#FF7C01'}} onPress={() => navigation.navigate('Register')} >Criar uma nova conta</Text>
+        <Text style={{color: '#FF7C01', marginBottom: 10}} onPress={() => navigation.navigate('Register')} >Criar uma nova conta</Text>
       </View>
     </View>
   );
@@ -73,7 +73,8 @@ const styles = StyleSheet.create({
   title:{
     fontSize: 36,
     color: '#0D0C0B',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginVertical: 10, 
   },
   inputText:{
     marginBottom: 15
